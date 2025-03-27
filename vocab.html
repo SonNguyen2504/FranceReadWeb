@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulaire</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f8f8;
+            text-align: center;
+        }
+
+        .navbar {
+            background: #333;
+            padding: 15px;
+            margin-bottom: 30px;
+            color: white;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #0055A4;
+        }
+
+        h1,
+        h2 {
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #0055A4;
+            color: white;
+        }
+
+        .btn {
+            margin-top: 20px;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            background-color: #EF4135;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">📖 Lectures en Français</div>
+    <div class="container">
+        <h1>Vocabulaire</h1>
+        <h2 id="title">Titre de l'Article</h2> <!-- Tiêu đề bài đọc -->
+
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Mots</th>
+                    <th>Genre</th>
+                    <th>Sens</th>
+                </tr>
+            </thead>
+            <tbody id="vocab-list">
+                <!-- Dữ liệu sẽ được thêm vào đây -->
+            </tbody>
+        </table>
+        <button class="btn" onclick="goBack()">⬅ Trở về</button>
+    </div>
+
+    <script>
+        // Dữ liệu bài đọc và từ vựng (fix cứng)
+        const articles = {
+            1: { title: "Vacances : les Français arrivent-ils à déconnecter du travail ?" },
+            2: { title: "Prendre des vacances améliore la productivité" },
+            3: { title: "Running : est-ce efficace de ne courir que le dimanche ?" }
+        };
+
+        const vocabData = {
+            1: [
+                { mot: "déconnecter", genre: "v.", sens: "ngắt kết nối, rời xa công việc" },
+                { mot: "boîte mail", genre: "n.f.", sens: "hộp thư điện tử" },
+                { mot: "frontière", genre: "n.f.", sens: "ranh giới" },
+                { mot: "lâcher prise", genre: "v. expr.", sens: "buông bỏ, thư giãn" },
+                { mot: "auto entrepreneur", genre: "n.m.", sens: "người tự kinh doanh" },
+                { mot: "repos", genre: "n.m.", sens: "nghỉ ngơi" },
+                { mot: "productif/productive", genre: "adj.", sens: "năng suất" },
+                { mot: "outil", genre: "n.m.", sens: "công cụ" }
+            ],
+            2: [
+                { mot: "productivité", genre: "n.f.", sens: "năng suất" },
+                { mot: "épanouissement", genre: "n.m.", sens: "sự phát triển cá nhân, sự hạnh phúc" },
+                { mot: "formule", genre: "n.f.", sens: "hình thức, mô hình" },
+                { mot: "batterie", genre: "n.f.", sens: "năng lượng (ẩn dụ: sạc lại năng lượng)" },
+                { mot: "chiffre d’affaires", genre: "n.m.", sens: "doanh thu" },
+                { mot: "présentéisme", genre: "n.m.", sens: "sự có mặt ở nơi làm việc một cách hình thức" },
+                { mot: "bienfait", genre: "n.m.", sens: "lợi ích" },
+                { mot: "à long terme", genre: "loc. adv.", sens: "về lâu dài" }
+            ],
+            3: [
+                { mot: "running dominical", genre: "n.m.", sens: "chạy bộ vào chủ nhật" },
+                { mot: "condition physique", genre: "n.f.", sens: "thể lực" },
+                { mot: "minimum syndical", genre: "n.m.", sens: "mức tối thiểu" },
+                { mot: "zone de confort", genre: "n.f.", sens: "vùng an toàn (ẩn dụ)" },
+                { mot: "hygiène de vie", genre: "n.f.", sens: "lối sống lành mạnh" },
+                { mot: "fractionné", genre: "n.m./adj.", sens: "chạy biến tốc (hoặc: gián đoạn)" },
+                { mot: "gainage", genre: "n.m.", sens: "bài tập giữ cơ thể ở tư thế cố định" },
+                { mot: "sangle abdominale", genre: "n.f.", sens: "cơ vùng bụng" }
+            ],
+            4: [
+                { mot: "randonnée", genre: "n.f.", sens: "chuyến đi bộ đường dài, dã ngoại" },
+                { mot: "écosystème", genre: "n.m.", sens: "hệ sinh thái" },
+                { mot: "patrimoine", genre: "n.m.", sens: "di sản" },
+                { mot: "fret", genre: "n.m.", sens: "vận tải hàng hóa" },
+                { mot: "entrepôt", genre: "n.m.", sens: "kho hàng" },
+                { mot: "reconversion", genre: "n.f.", sens: "tái thiết, chuyển đổi mục đích" },
+                { mot: "symbiose", genre: "n.f.", sens: "sự cộng sinh, hòa hợp" },
+                { mot: "balisage", genre: "n.m.", sens: "việc đánh dấu đường đi" }
+            ],
+            5: [
+                { mot: "ségrégation", genre: "n.f.", sens: "sự phân biệt, chia tách" },
+                { mot: "discipline", genre: "n.f.", sens: "môn thể thao, lĩnh vực" },
+                { mot: "échec", genre: "n.m.", sens: "thất bại" },
+                { mot: "paliers", genre: "n.m.pl.", sens: "cấp độ, giai đoạn" },
+                { mot: "prestige", genre: "n.m.", sens: "uy tín, danh tiếng" },
+                { mot: "homosexuel", genre: "adj./n.", sens: "đồng tính" },
+                { mot: "mixité", genre: "n.f.", sens: "sự hòa trộn, tính đa dạng" },
+                { mot: "socialisation", genre: "n.f.", sens: "quá trình hòa nhập xã hội" }
+            ],
+            6: [
+                { mot: "bulletin trimestriel", genre: "n.m.", sens: "phiếu điểm theo quý" },
+                { mot: "engagement", genre: "n.m.", sens: "sự cam kết" },
+                { mot: "stimulation", genre: "n.f.", sens: "sự kích thích" },
+                { mot: "maîtrise du mouvement", genre: "n.f.", sens: "kiểm soát chuyển động" },
+                { mot: "fonction cérébrale", genre: "n.f.", sens: "chức năng não bộ" },
+                { mot: "confiance", genre: "n.f.", sens: "sự tự tin" },
+                { mot: "inclusion", genre: "n.f.", sens: "sự hòa nhập" },
+                { mot: "orientation sexuelle", genre: "n.f.", sens: "xu hướng tình dục" }
+            ],
+            7: [
+                { mot: "automatisation", genre: "n.f.", sens: "tự động hóa" },
+                { mot: "robotisation", genre: "n.f.", sens: "sự đưa robot vào sản xuất" },
+                { mot: "cobot", genre: "n.m.", sens: "robot cộng tác" },
+                { mot: "manutention", genre: "n.f.", sens: "xử lý hàng hóa, bốc xếp" },
+                { mot: "flexibilité", genre: "n.f.", sens: "sự linh hoạt" },
+                { mot: "réactivité", genre: "n.f.", sens: "tính phản ứng nhanh" },
+                { mot: "programmable", genre: "adj.", sens: "có thể lập trình được" },
+                { mot: "chaîne de montage", genre: "n.f.", sens: "dây chuyền lắp ráp" },
+                { mot: "directive", genre: "n.f.", sens: "chỉ thị, quy định" },
+                { mot: "intelligence artificielle", genre: "n.f.", sens: "trí tuệ nhân tạo" }
+            ],
+            8: [
+                { mot: "stage", genre: "n.m.", sens: "kỳ thực tập" },
+                { mot: "stagiaire", genre: "n.", sens: "người thực tập" },
+                { mot: "encadrement", genre: "n.m.", sens: "sự hướng dẫn, giám sát" },
+                { mot: "rémunération", genre: "n.f.", sens: "tiền thù lao" },
+                { mot: "dévalorisé", genre: "adj.", sens: "bị đánh giá thấp" },
+                { mot: "accompagnement", genre: "n.m.", sens: "sự hỗ trợ, đồng hành" },
+                { mot: "ressenti", genre: "n.m.", sens: "cảm nhận" },
+                { mot: "tremplin", genre: "n.m.", sens: "bàn đạp" },
+                { mot: "galère", genre: "n.f.", sens: "sự vất vả, khốn khổ" },
+                { mot: "acquérir", genre: "v.", sens: "đạt được, thu được" }
+            ],
+            9: [
+                { mot: "tare", genre: "n.f.", sens: "gánh nặng, điều đáng xấu hổ" },
+                { mot: "accro au travail", genre: "n.m.", sens: "người nghiện việc" },
+                { mot: "droit à la déconnexion", genre: "n.m.", sens: "quyền ngắt kết nối công việc" },
+                { mot: "liberté", genre: "n.f.", sens: "tự do" },
+                { mot: "préjugé", genre: "n.m.", sens: "định kiến" },
+                { mot: "équilibre", genre: "n.m.", sens: "sự cân bằng" },
+                { mot: "productivité", genre: "n.f.", sens: "năng suất" },
+                { mot: "stress", genre: "n.m.", sens: "căng thẳng" },
+                { mot: "se révéler", genre: "v.", sens: "cho thấy, tỏ ra" },
+                { mot: "grasse matinée", genre: "n.f.", sens: "ngủ nướng" }
+            ],
+            10: [
+                { mot: "automatisation", genre: "n.f.", sens: "tự động hóa" },
+                { mot: "robotisation", genre: "n.f.", sens: "sự đưa robot vào sản xuất" },
+                { mot: "cobot", genre: "n.m.", sens: "robot cộng tác" },
+                { mot: "manutention", genre: "n.f.", sens: "xử lý hàng hóa, bốc xếp" },
+                { mot: "flexibilité", genre: "n.f.", sens: "sự linh hoạt" },
+                { mot: "réactivité", genre: "n.f.", sens: "tính phản ứng nhanh" },
+                { mot: "programmable", genre: "adj.", sens: "có thể lập trình được" },
+                { mot: "chaîne de montage", genre: "n.f.", sens: "dây chuyền lắp ráp" },
+                { mot: "directive", genre: "n.f.", sens: "chỉ thị, quy định" },
+                { mot: "intelligence artificielle", genre: "n.f.", sens: "trí tuệ nhân tạo" }
+            ],
+            11: [
+                { mot: "stage", genre: "n.m.", sens: "kỳ thực tập" },
+                { mot: "stagiaire", genre: "n.", sens: "người thực tập" },
+                { mot: "encadrement", genre: "n.m.", sens: "sự hướng dẫn, giám sát" },
+                { mot: "rémunération", genre: "n.f.", sens: "tiền thù lao" },
+                { mot: "dévalorisé", genre: "adj.", sens: "bị đánh giá thấp" },
+                { mot: "accompagnement", genre: "n.m.", sens: "sự hỗ trợ, đồng hành" },
+                { mot: "ressenti", genre: "n.m.", sens: "cảm nhận" },
+                { mot: "tremplin", genre: "n.m.", sens: "bàn đạp" },
+                { mot: "galère", genre: "n.f.", sens: "sự vất vả, khốn khổ" },
+                { mot: "acquérir", genre: "v.", sens: "đạt được, thu được" }
+            ],
+            12: [
+                { mot: "tare", genre: "n.f.", sens: "gánh nặng, điều đáng xấu hổ" },
+                { mot: "accro au travail", genre: "n.m.", sens: "người nghiện việc" },
+                { mot: "droit à la déconnexion", genre: "n.m.", sens: "quyền ngắt kết nối công việc" },
+                { mot: "liberté", genre: "n.f.", sens: "tự do" },
+                { mot: "préjugé", genre: "n.m.", sens: "định kiến" },
+                { mot: "équilibre", genre: "n.m.", sens: "sự cân bằng" },
+                { mot: "productivité", genre: "n.f.", sens: "năng suất" },
+                { mot: "stress", genre: "n.m.", sens: "căng thẳng" },
+                { mot: "se révéler", genre: "v.", sens: "cho thấy, tỏ ra" },
+                { mot: "grasse matinée", genre: "n.f.", sens: "ngủ nướng" }
+            ],
+            13: [
+                { mot: "horloge biologique", genre: "n.f.", sens: "đồng hồ sinh học" },
+                { mot: "puberté", genre: "n.f.", sens: "tuổi dậy thì" },
+                { mot: "rythme biologique", genre: "n.m.", sens: "nhịp sinh học" },
+                { mot: "étude postdoctorale", genre: "n.f.", sens: "nghiên cứu sau tiến sĩ" },
+                { mot: "corrélation", genre: "n.f.", sens: "mối tương quan" },
+                { mot: "réussite", genre: "n.f.", sens: "sự thành công" },
+                { mot: "sommeil", genre: "n.m.", sens: "giấc ngủ" },
+                { mot: "dépression", genre: "n.f.", sens: "trầm cảm" },
+                { mot: "anxiété", genre: "n.f.", sens: "lo âu" },
+                { mot: "troubles du comportement", genre: "n.m.", sens: "rối loạn hành vi" }
+            ],
+            14: [
+                { mot: "devoirs", genre: "n.m.", sens: "bài tập" },
+                { mot: "entraîner", genre: "v.", sens: "luyện tập" },
+                { mot: "réinvestissement", genre: "n.m.", sens: "sự tái áp dụng" },
+                { mot: "capital culturel", genre: "n.m.", sens: "vốn văn hóa" },
+                { mot: "externalisation", genre: "n.f.", sens: "sự làm ngoài" },
+                { mot: "encadrer", genre: "v.", sens: "hướng dẫn" },
+                { mot: "soutien scolaire", genre: "n.m.", sens: "hỗ trợ học tập" },
+                { mot: "méthode d'enseignement", genre: "n.f.", sens: "phương pháp giảng dạy" },
+                { mot: "lien de confiance", genre: "n.m.", sens: "mối liên hệ tin cậy" },
+                { mot: "réussite", genre: "n.f.", sens: "sự thành công" }
+            ],
+            15: [
+                { mot: "préparation", genre: "n.f.", sens: "sự chuẩn bị" },
+                { mot: "système d'aide aux devoirs", genre: "n.m.", sens: "hệ thống hỗ trợ bài tập" },
+                { mot: "concours", genre: "n.m.", sens: "kỳ thi" },
+                { mot: "vocation", genre: "n.f.", sens: "sự kêu gọi, nghề nghiệp đam mê" },
+                { mot: "prématuré", genre: "adj.", sens: "quá sớm" },
+                { mot: "poussée", genre: "n.f.", sens: "sự thúc đẩy" },
+                { mot: "réussite", genre: "n.f.", sens: "sự thành công" },
+                { mot: "dossier", genre: "n.m.", sens: "hồ sơ" },
+                { mot: "taux de réussite", genre: "n.m.", sens: "tỷ lệ thành công" },
+                { mot: "prépa", genre: "n.f.", sens: "lớp dự bị đại học" }
+            ],
+            16: [
+                { mot: "idéologie extrémiste", genre: "n", sens: "tư tưởng cực đoan" },
+                { mot: "considérations religieuses", genre: "n", sens: "quan điểm tôn giáo" },
+                { mot: "forces de l'ordre", genre: "n", sens: "lực lượng hành pháp (cảnh sát)" },
+                { mot: "enquête déclenchée", genre: "v", sens: "cuộc điều tra được khởi động" },
+                { mot: "radicalisation", genre: "n", sens: "cực đoan hóa" },
+                { mot: "réseau extrémiste raciste", genre: "n", sens: "mạng lưới cực đoan phân biệt chủng tộc" },
+                { mot: "poignardé", genre: "v", sens: "bị đâm bằng dao" },
+                { mot: "chiffrement", genre: "n", sens: "mã hóa" },
+                { mot: "responsabilité", genre: "n", sens: "trách nhiệm" }
+            ],
+            17: [
+                { mot: "Césure", genre: "n.f.", sens: "Sự gián đoạn (học tập hoặc công việc)" },
+                { mot: "Parcours", genre: "n.m.", sens: "Hành trình, lộ trình học tập" },
+                { mot: "Sélectif", genre: "adj.", sens: "Có tính chọn lọc (về tuyển sinh)" },
+                { mot: "Candidature", genre: "n.f.", sens: "Đơn ứng tuyển, hồ sơ đăng ký" },
+                { mot: "Motivation", genre: "n.f.", sens: "Động lực, sự thúc đẩy" },
+                { mot: "Autonomie", genre: "n.f.", sens: "Sự tự lập, khả năng tự chủ" },
+                { mot: "Orientation", genre: "n.f.", sens: "Sự định hướng (nghề nghiệp)" },
+                { mot: "Échec", genre: "n.m.", sens: "Sự thất bại (trong học tập)" },
+                { mot: "Compétence", genre: "n.f.", sens: "Năng lực, kỹ năng chuyên môn" },
+                { mot: "Projet", genre: "n.m.", sens: "Kế hoạch, dự án (cá nhân hoặc nghề nghiệp)" }
+            ],
+            18: [
+                { mot: "en grande difficulté", genre: "loc. adj.", sens: "gặp khó khăn lớn" },
+                { mot: "très faible", genre: "adj.", sens: "rất yếu" },
+                { mot: "médiocre", genre: "adj.", sens: "trung bình kém" },
+                { mot: "lié(e) à", genre: "adj. + prép.", sens: "liên quan đến" },
+                { mot: "collège", genre: "n.m.", sens: "trường cấp hai" },
+                { mot: "illettrisme", genre: "n.m.", sens: "nạn mù chữ" },
+                { mot: "déficit", genre: "n.m.", sens: "thiếu hụt" },
+                { mot: "lacune", genre: "n.f.", sens: "lỗ hổng, thiếu sót" },
+                { mot: "compréhension minimale", genre: "loc. nom.", sens: "sự hiểu tối thiểu" },
+                { mot: "automaticité", genre: "n.f.", sens: "tính tự động" },
+                { mot: "homophonie", genre: "n.f.", sens: "tính đồng âm" },
+                { mot: "critère", genre: "n.m.", sens: "tiêu chí" },
+                { mot: "précaution", genre: "n.f.", sens: "sự thận trọng" },
+                { mot: "département", genre: "n.m.", sens: "tỉnh (ở Pháp)" },
+                { mot: "métropolitaine", genre: "adj.", sens: "thuộc địa phận chính quốc (Pháp)" },
+                { mot: "outre-mer", genre: "n.m.", sens: "hải ngoại (vùng ngoài nước Pháp)" },
+                { mot: "se présenter à", genre: "v. pron.", sens: "tham gia vào, có mặt tại" },
+                { mot: "traitement du langage", genre: "loc. nom.", sens: "xử lý ngôn ngữ" }
+            ],
+            19: [
+                { mot: "charcuterie", genre: "n.f.", sens: "thịt nguội, thịt chế biến" },
+                { mot: "légumineuses", genre: "n.f.pl.", sens: "các loại đậu" },
+                { mot: "repères", genre: "n.m.pl.", sens: "chuẩn mực, tiêu chuẩn" },
+                { mot: "actualisé", genre: "adj.", sens: "được cập nhật" },
+                { mot: "préconisation", genre: "n.f.", sens: "kiến nghị, khuyến nghị" },
+                { mot: "assiette", genre: "n.f.", sens: "đĩa thức ăn" },
+                { mot: "colza", genre: "n.m.", sens: "cải dầu" },
+                { mot: "perturbateur endocrinien", genre: "n.m.", sens: "chất gây rối loạn nội tiết" },
+                { mot: "raffiné", genre: "adj.", sens: "đã tinh chế" },
+                { mot: "teneur", genre: "n.f.", sens: "hàm lượng" }
+            ],
+            20: [
+                { mot: "jambon-beurre", genre: "n.m.", sens: "bánh mì kẹp giăm bông và bơ" },
+                { mot: "part de marché", genre: "n.f.", sens: "thị phần" },
+                { mot: "brasserie", genre: "n.f.", sens: "quán ăn, quán bia" },
+                { mot: "supérette", genre: "n.f.", sens: "siêu thị mini" },
+                { mot: "indice", genre: "n.m.", sens: "chỉ số" },
+                { mot: "fait-maison", genre: "adj.", sens: "làm thủ công, nhà làm" },
+                { mot: "restauration rapide", genre: "n.f.", sens: "dịch vụ ăn nhanh" },
+                { mot: "vente au comptoir", genre: "n.f.", sens: "bán hàng tại quầy" },
+                { mot: "montée en gamme", genre: "loc.", sens: "nâng cấp chất lượng" },
+                { mot: "malbouffe", genre: "n.f.", sens: "thức ăn kém chất lượng" }
+            ],
+            21: [
+                { mot: "cuisinophobe", genre: "n.", sens: "người sợ nấu ăn" },
+                { mot: "empathie", genre: "n.f.", sens: "sự đồng cảm" },
+                { mot: "deuil", genre: "n.m.", sens: "sự tang chế, mất mát" },
+                { mot: "altruiste", genre: "adj.", sens: "vị tha" },
+                { mot: "créativité", genre: "n.f.", sens: "sự sáng tạo" },
+                { mot: "norme culturelle", genre: "n.f.", sens: "chuẩn mực văn hóa" },
+                { mot: "coloriage", genre: "n.m.", sens: "việc tô màu" },
+                { mot: "se concentrer", genre: "v.", sens: "tập trung" },
+                { mot: "thérapie culinaire", genre: "n.f.", sens: "trị liệu bằng nấu ăn" },
+                { mot: "bénéfice", genre: "n.m.", sens: "lợi ích" }
+            ],
+            22: [
+                { mot: "casque", genre: "n.m.", sens: "mũ bảo hiểm" },
+                { mot: "traumatisme crânien", genre: "n.m.", sens: "chấn thương sọ não" },
+                { mot: "véhicule à moteur", genre: "n.m.", sens: "phương tiện có động cơ" },
+                { mot: "dissuader", genre: "v.", sens: "ngăn cản, làm nản chí" },
+                { mot: "circulation", genre: "n.f.", sens: "giao thông" },
+                { mot: "détracteur", genre: "n.m.", sens: "người phản đối" },
+                { mot: "obligatoire", genre: "adj.", sens: "bắt buộc" },
+                { mot: "conférence de presse", genre: "n.f.", sens: "họp báo" },
+                { mot: "ceinture de sécurité", genre: "n.f.", sens: "dây an toàn" },
+                { mot: "loi", genre: "n.f.", sens: "luật" }
+            ],
+            23: [
+                { mot: "vélo", genre: "n.m.", sens: "xe đạp" },
+                { mot: "piste cyclable", genre: "n.f.", sens: "làn đường dành cho xe đạp" },
+                { mot: "vélib’", genre: "n.m.", sens: "dịch vụ xe đạp công cộng" },
+                { mot: "électrique", genre: "adj.", sens: "điện" },
+                { mot: "pollution", genre: "n.f.", sens: "ô nhiễm" },
+                { mot: "écosystème", genre: "n.m.", sens: "hệ sinh thái" },
+                { mot: "interconnexion", genre: "n.f.", sens: "kết nối liên thông" },
+                { mot: "IKV (indemnité kilométrique vélo)", genre: "n.f.", sens: "trợ cấp đi xe đạp theo km" },
+                { mot: "start-up", genre: "n.f.", sens: "công ty khởi nghiệp" },
+                { mot: "urbain", genre: "adj.", sens: "thuộc đô thị" }
+            ],
+            24: [
+                { mot: "tabagisme passif", genre: "n.m.", sens: "hút thuốc thụ động" },
+                { mot: "contrevenant", genre: "n.m.", sens: "người vi phạm" },
+                { mot: "amende", genre: "n.f.", sens: "tiền phạt" },
+                { mot: "enfant", genre: "n.m.", sens: "trẻ em" },
+                { mot: "loi", genre: "n.f.", sens: "luật" },
+                { mot: "produit chimique", genre: "n.m.", sens: "chất hóa học" },
+                { mot: "déclaration", genre: "n.f.", sens: "tuyên bố" },
+                { mot: "danger", genre: "n.m.", sens: "nguy hiểm" },
+                { mot: "association", genre: "n.f.", sens: "tổ chức, hiệp hội" },
+                { mot: "considération", genre: "n.f.", sens: "sự quan tâm, để ý" }
+            ],
+            25: [
+                { mot: "tutoriel", genre: "n.m.", sens: "hướng dẫn" },
+                { mot: "révision", genre: "n.f.", sens: "sự ôn tập" },
+                { mot: "crédit", genre: "n.m.", sens: "tín dụng, công nhận" },
+                { mot: "sésame", genre: "n.m.", sens: "chìa khóa, vật phẩm quan trọng" },
+                { mot: "didactique", genre: "adj.", sens: "thuộc về phương pháp giảng dạy" },
+                { mot: "dédramatiser", genre: "v.", sens: "làm nhẹ bớt sự lo lắng" },
+                { mot: "angoissé", genre: "adj.", sens: "lo âu" },
+                { mot: "complément", genre: "n.m.", sens: "sự bổ sung" },
+                { mot: "chaîne", genre: "n.f.", sens: "kênh (truyền hình, youtube)" },
+                { mot: "repenser", genre: "v.", sens: "suy nghĩ lại, thay đổi quan điểm" }
+            ],
+            26: [
+                { mot: "smartphone", genre: "n.m.", sens: "điện thoại thông minh" },
+                { mot: "réseaux sociaux", genre: "n.m.", sens: "mạng xã hội" },
+                { mot: "solitude", genre: "n.f.", sens: "sự cô đơn" },
+                { mot: "émancipation", genre: "n.f.", sens: "sự giải phóng, tự do" },
+                { mot: "bien-être", genre: "n.m.", sens: "sự thoải mái, hạnh phúc" },
+                { mot: "interactions sociales", genre: "n.f.", sens: "tương tác xã hội" },
+                { mot: "accros", genre: "n.m.", sens: "người nghiện" },
+                { mot: "isolement", genre: "n.m.", sens: "sự cô lập" },
+                { mot: "taux", genre: "n.m.", sens: "tỷ lệ" },
+                { mot: "anxiété", genre: "n.f.", sens: "lo âu" }
+            ],
+            27: [
+                { mot: "réseaux sociaux", genre: "n.m.", sens: "mạng xã hội" },
+                { mot: "harcèlement", genre: "n.m.", sens: "quấy rối" },
+                { mot: "anxiété sociale", genre: "n.f.", sens: "lo âu xã hội" },
+                { mot: "dépression", genre: "n.f.", sens: "trầm cảm" },
+                { mot: "décrochage scolaire", genre: "n.m.", sens: "sự bỏ học" },
+                { mot: "plateforme", genre: "n.f.", sens: "nền tảng (mạng xã hội)" },
+                { mot: "violence verbale", genre: "n.f.", sens: "bạo lực lời nói" },
+                { mot: "fausse rumeur", genre: "n.f.", sens: "tin đồn sai sự thật" },
+                { mot: "identité", genre: "n.f.", sens: "danh tính" },
+                { mot: "comportement en ligne", genre: "n.m.", sens: "hành vi trực tuyến" }
+            ],
+            28: [
+                { mot: "grève", genre: "n.f.", sens: "cuộc đình công" },
+                { mot: "protester", genre: "v.", sens: "phản đối" },
+                { mot: "rectorat", genre: "n.m.", sens: "văn phòng giáo dục" },
+                { mot: "décharge d’enseignement", genre: "loc. nom.", sens: "chế độ miễn nhiệm giảng dạy" },
+                { mot: "fermeture", genre: "n.f.", sens: "sự đóng cửa" },
+                { mot: "mobilisation", genre: "n.f.", sens: "sự huy động" },
+                { mot: "révision", genre: "n.f.", sens: "sự xem xét, điều chỉnh" },
+                { mot: "prévision", genre: "n.f.", sens: "sự dự đoán, dự báo" },
+                { mot: "encadrement", genre: "n.m.", sens: "sự hướng dẫn, chỉ đạo" },
+                { mot: "impasse", genre: "n.f.", sens: "bế tắc" }
+            ],
+            29: [
+                { mot: "inégalitaire", genre: "adj.", sens: "bất bình đẳng" },
+                { mot: "discrimination géographique", genre: "loc. nom.", sens: "phân biệt theo địa lý" },
+                { mot: "décrochage scolaire", genre: "loc. nom.", sens: "bỏ học, rớt khỏi trường" },
+                { mot: "décentralisation", genre: "n.f.", sens: "phân cấp, phân quyền" },
+                { mot: "disparité", genre: "n.f.", sens: "sự chênh lệch, sự khác biệt" },
+                { mot: "rémunération", genre: "n.f.", sens: "tiền lương, thù lao" },
+                { mot: "déficience", genre: "n.f.", sens: "sự thiếu hụt, khiếm khuyết" },
+                { mot: "subvention", genre: "n.f.", sens: "sự tài trợ, trợ cấp" },
+                { mot: "cercle vicieux", genre: "loc. nom.", sens: "vòng luẩn quẩn, vòng xoáy" },
+                { mot: "équité", genre: "n.f.", sens: "sự công bằng" }
+            ],
+            30: [
+                { mot: "éducation à la sexualité", genre: "loc. nom.", sens: "giáo dục giới tính" },
+                { mot: "programme", genre: "n.m.", sens: "chương trình" },
+                { mot: "délégué", genre: "adj.", sens: "đại diện, ủy quyền" },
+                { mot: "acceptabilité", genre: "n.f.", sens: "sự chấp nhận, sự dễ tiếp nhận" },
+                { mot: "théories du genre", genre: "loc. nom.", sens: "lý thuyết về giới tính" },
+                { mot: "encadrement", genre: "n.m.", sens: "sự giám sát, hướng dẫn" },
+                { mot: "militantisme", genre: "n.m.", sens: "sự hoạt động chính trị, đấu tranh" },
+                { mot: "revue", genre: "n.f.", sens: "tạp chí, bản đánh giá" },
+                { mot: "prise en compte", genre: "loc. nom.", sens: "sự xem xét, sự chấp nhận" },
+                { mot: "objectif", genre: "n.m.", sens: "mục tiêu" }
+            ]
+        };
+
+        // Lấy ID bài đọc từ URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const articleId = urlParams.get('id');
+
+        // Hiển thị tiêu đề bài đọc
+        if (articles[articleId]) {
+            document.getElementById('title').innerText = articles[articleId].title;
+        } else {
+            document.getElementById('title').innerText = "Article non trouvé";
+        }
+
+        // Hiển thị danh sách từ vựng
+        const vocabList = document.getElementById("vocab-list");
+        if (vocabData[articleId]) {
+            vocabData[articleId].forEach((item, index) => {
+                let row = `<tr>
+                <td>${index + 1}</td>
+                <td>${item.mot}</td>
+                <td>${item.genre}</td>
+                <td>${item.sens}</td>
+            </tr>`;
+                vocabList.innerHTML += row;
+            });
+        } else {
+            vocabList.innerHTML = "<tr><td colspan='3'>Aucune donnée disponible.</td></tr>";
+        }
+
+        // Nút trở về
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
+</body>
+
+</html>
